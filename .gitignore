@@ -1,0 +1,21 @@
+# Ignore Python cache and virtual environment
+__pycache__/
+*.pyc
+*.pyo
+venv/
+env/
+
+# Ignore Django secrets and database files
+*.sqlite3
+*.log
+.env
+config/settings.py  # If it contains sensitive info
+
+# Ignore compiled and static files
+staticfiles/
+media/
+
+# Ignore IDE/editor settings
+.vscode/
+.idea/
+*.swp
