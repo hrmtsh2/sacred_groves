@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Submit a Sacred Grove{% endblock title %}
+
+{% block head %}
+<style>
+    .form-section-card {
+        background-color: #f8f9fa;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    .form-field-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-field-group label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .form-field-group .form-control { /* Ensure form-control styling is applied if not default */
+        /* Add any specific overrides if needed */
+    }
+    .form-field-group .form-text { /* Styling for help text */
+        font-size: 0.875em;
+        color: #6c757d;
+    }
+    .btn-submit-grove {
+        /* Custom styling for the submit button if needed, beyond btn-primary */
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+</style>
+{% endblock head %}
+
+{% block body %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="form-section-card">
+                <h2 class="text-center mb-4">Contribute: Submit Sacred Grove Details</h2>
+                <p class="text-center text-muted mb-4">
+                    Help us expand our database by providing information about sacred groves you know.
+                    Your contribution is valuable for conservation and awareness. Please be as accurate as possible.
+                </p>
+
+                <form method="POST" action="{% url 'submit_sacred_grove' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        <div class="form-field-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }} {# This renders the widget with its classes #}
+                            {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+                            {% endif %}
+                            {% if field.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in field.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-submit-grove">
+                            <i class="fas fa-paper-plane"></i> Submit Grove Information
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock body %}

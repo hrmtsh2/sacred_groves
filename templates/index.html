@@ -1,0 +1,449 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home - Sacred Groves of India{% endblock title %}
+
+{% block page_identifier %}index{% endblock %} {% block head %}
+  <style>
+  /* General Reset/Setup (Optional, base.html might cover) */
+  * {
+    box-sizing: border-box;
+  }
+
+  /* --- Slideshow Styles (Keep these) --- */
+  .slideshow-container {
+    position: relative;
+    width: 100%;
+    height: 85vh; /* Adjusted height to better match typical hero sections */
+    overflow: hidden;
+    background-color: #f0f0f0;
+  }
+
+  .mySlides {
+    display: none;
+    width: 100%;
+    height: 100%;
+  }
+
+  .mySlides img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    vertical-align: middle;
+  }
+
+  .fade-animation {
+    animation-name: fadeEffect;
+    animation-duration: 1.5s;
+  }
+
+  @keyframes fadeEffect {
+    from {opacity: .4}
+    to {opacity: 1}
+  }
+
+  .prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    transition: 0.3s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+    background-color: rgba(0,0,0,0.35);
+    z-index: 2;
+  }
+
+  .next {
+    right: 0;
+    border-radius: 3px 0 0 3px;
+  }
+
+  .prev:hover, .next:hover {
+    background-color: rgba(0,0,0,0.6);
+  }
+
+  .dots-container {
+    text-align: center;
+    padding: 10px;
+    position: absolute;
+    bottom: 25px; /* Adjusted position slightly */
+    width: 100%;
+    z-index: 2;
+  }
+
+  .dot {
+    cursor: pointer;
+    height: 12px;
+    width: 12px;
+    margin: 0 3px;
+    background-color: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .active-dot, .dot:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(0,0,0,0.4);
+  }
+  /* --- End Slideshow Styles --- */
+
+
+  /* --- Styling for Integrated Info Cards --- */
+  .info-section {
+    padding: 60px 0;
+  }
+
+  .info-section .section-heading {
+    text-align: center;
+    margin-bottom: 50px;
+    font-size: 2.4rem;
+    font-weight: 600;
+    color: #343a40;
+  }
+
+  .info-card {
+    background-color: #ffffff;
+    border: 1px solid #eee;
+    border-top: 4px solid #28a745; /* THEME_COLOR_PRIMARY - Adjust this green */
+    border-radius: 0.5rem;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0.15rem 0.45rem rgba(0,0,0,0.075);
+    padding: 1.5rem;
+  }
+
+  .info-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0.6rem 1.2rem rgba(0,0,0,0.12);
+  }
+
+  .info-card .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex-grow: 1;
+  }
+
+  .info-card .card-icon {
+    font-size: 3rem;
+    color: #28a745; /* THEME_COLOR_PRIMARY - Adjust this green */
+    margin-bottom: 20px;
+  }
+
+  .info-card .card-title {
+    color: #343a40;
+    font-weight: 600;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+
+  .info-card .card-text {
+    color: #5a6268;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    flex-grow: 1;
+    margin-bottom: 1.5rem;
+  }
+
+  .info-card .btn {
+    margin-top: auto;
+  }
+  /* --- End Info Card Styling --- */
+
+  /* Styling for adapted "What We Do" section */
+  .what-we-do-section .single-cat {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      padding: 30px 20px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background: #fff;
+      height: 100%;
+  }
+  .what-we-do-section .single-cat:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+  }
+  .what-we-do-section .single-cat .cat-icon i {
+      font-size: 40px;
+      margin-bottom: 20px;
+      color: #28a745; /* Theme color */
+      display: inline-block;
+  }
+   .what-we-do-section .single-cat .cat-cap h5 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+   }
+   .what-we-do-section .single-cat .cat-cap p {
+      font-size: 0.9rem;
+      color: #555;
+   }
+
+   /* --- Styling for CTA Section --- */
+   .wantToWork-area .wants-wrapper {
+       background-size: cover;
+       background-position: center;
+       /* Removed default white text color */
+       padding: 4rem 2rem;
+       border-radius: 0.5rem;
+       position: relative; /* Needed for potential overlay */
+   }
+
+   /* Optional: Add a dark overlay if background image is too light */
+   /*
+   .wantToWork-area .wants-wrapper::before {
+       content: "";
+       position: absolute;
+       top: 0;
+       left: 0;
+       right: 0;
+       bottom: 0;
+       background-color: rgba(0, 0, 0, 0.4); // Adjust darkness (0.4 = 40% black)
+       border-radius: inherit; // Match parent rounding
+       z-index: 1;
+   }
+   .wantToWork-area .row {
+       position: relative; // Ensure content is above overlay
+       z-index: 2;
+   }
+   */
+
+    .wantToWork-area .wantToWork-caption h2 {
+        /* color: #fff; */ /* Color removed, will inherit or use dark color */
+        color: #333; /* CHANGED: Set to a dark color */
+        font-weight: 600;
+    }
+     .wantToWork-area .wantToWork-caption p {
+        /* color: #eee; */ /* Color removed, will inherit or use dark color */
+        color: #555; /* CHANGED: Set to a dark grey color */
+        margin-top: 1rem;
+        font-size: 1.1rem;
+    }
+
+   /* Styling for CTA Button */
+   .wantToWork-area .btn.cta-submit-btn {
+       background-color: #28a745; /* Theme primary color */
+       color: #ffffff;
+       border: 1px solid #28a745;
+       padding: 0.8rem 2.2rem;
+       font-weight: 600;
+       font-size: 1rem;
+       text-transform: uppercase;
+       letter-spacing: 0.5px;
+       transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+   }
+   .wantToWork-area .btn.cta-submit-btn:hover {
+       background-color: #218838; /* Darker theme color */
+       border-color: #1e7e34;
+       color: #ffffff;
+       transform: translateY(-2px);
+   }
+   /* --- End CTA Section Styling --- */
+
+</style>
+{% endblock head %}
+
+{% block body %}
+
+  <div id="preloader-active">
+    <div class="preloader d-flex align-items-center justify-content-center">
+        <div class="preloader-inner position-relative">
+            <div class="preloader-circle"></div>
+            <div class="preloader-img pere-text">
+                <img src="{% static 'img/logo/your-project-logo.png' %}" alt="Loading...">
+            </div>
+        </div>
+    </div>
+  </div>
+  <main>
+
+    <div class="slideshow-container">
+      <div class="mySlides fade-animation">
+        <img src="{% static 'img/gallery/img1.jpeg' %}" alt="Scenic view of a lush sacred grove">
+      </div>
+      <div class="mySlides fade-animation">
+        <img src="{% static 'img/gallery/img2.jpeg' %}" alt="Ancient trees within a protected sacred site">
+      </div>
+      <div class="mySlides fade-animation">
+        <img src="{% static 'img/gallery/img3.jpeg' %}" alt="Biodiversity hotspot within an Indian sacred grove">
+      </div>
+      <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+      <a class="next" onclick="plusSlides(1)">&#10095;</a>
+      <div class="dots-container">
+        <span class="dot" onclick="currentSlide(0)"></span>
+        <span class="dot" onclick="currentSlide(1)"></span>
+        <span class="dot" onclick="currentSlide(2)"></span>
+      </div>
+    </div>
+    <div class="service-area section-padding30 what-we-do-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-6 col-lg-7 col-md-10 col-sm-10">
+                    <div class="section-tittle text-center mb-80">
+                        <span>Our Core Activities</span>
+                        <h2>Mapping, Documenting & Raising Awareness</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-6 col-sm-6">
+                    <div class="single-cat text-center mb-50">
+                        <div class="cat-icon">
+                            <i class="fas fa-map-marked-alt"></i> </div>
+                        <div class="cat-cap">
+                            <h5><a href="{% url 'map' %}">Interactive Mapping</a></h5>
+                            <p>Visualizing the location and extent of sacred groves across India using modern mapping technology.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6">
+                    <div class="single-cat text-center mb-50">
+                        <div class="cat-icon">
+                            <i class="fas fa-database"></i> </div>
+                        <div class="cat-cap">
+                            <h5><a href="#">Data Collection</a></h5> {# Link to relevant page if any #}
+                            <p>Gathering comprehensive data on grove biodiversity, cultural practices, and conservation status.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6">
+                    <div class="single-cat text-center mb-50">
+                        <div class="cat-icon">
+                            <i class="fas fa-bullhorn"></i> </div>
+                        <div class="cat-cap">
+                            <h5><a href="{% url 'about' %}">Awareness & Education</a></h5>
+                            <p>Sharing knowledge and promoting the importance of sacred groves for ecological and cultural preservation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="info-section section-bg2" data-background="{% static 'img/gallery/section_bg03.png' %}"> <div class="container">
+        <h2 class="section-heading">Discover & Learn More</h2>
+        <div class="row">
+          <div class="col-lg-6 mb-4">
+            <div class="card info-card">
+              <div class="card-body">
+                <i class="fas fa-info-circle card-icon"></i>
+                <h3 class="card-title">About Our Project</h3>
+                <p class="card-text">
+                  Dedicated to mapping and documenting the invaluable sacred groves of India. Our mission is to preserve their rich biodiversity and cultural significance.
+                </p>
+                <a href="{% url 'about' %}" class="btn btn-outline-success">Learn More About Us</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 mb-4">
+            <div class="card info-card">
+              <div class="card-body">
+                <i class="fas fa-map-signs card-icon"></i>
+                <h3 class="card-title">Explore the Sacred Groves</h3>
+                <p class="card-text">
+                  Discover the locations of sacred groves across India using our interactive map. Filter by state and learn more about each unique site.
+                </p>
+                <a href="{% url 'map' %}" class="btn btn-success">View Interactive Map</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wantToWork-area ">
+        <div class="container">
+            <div class="wants-wrapper w-padding2 section-bg" data-background="{% static 'img/gallery/section_bg01.png' %}">
+                <div class="row align-items-center justify-content-between">
+                    <div class="col-xl-7 col-lg-8 col-md-8">
+                        <div class="wantToWork-caption wantToWork-caption2">
+                            <h2>Help Us Map India's Sacred Groves</h2>
+                            <p>Do you know about a sacred grove? Share your knowledge and contribute to this important conservation effort.</p>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-4 col-md-4 text-lg-end text-md-end text-sm-center mt-3 mt-md-0">
+                        <a href="{% url 'submit_sacred_grove' %}" class="btn cta-submit-btn">Submit a Grove</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    </main>
+  <div id="back-top" >
+      <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
+  </div>
+
+  <script>
+    let slideIndex = 0;
+    let slideTimer;
+    const slides = document.getElementsByClassName("mySlides");
+    const dots = document.getElementsByClassName("dot");
+
+    function showSlides(n) {
+      if (slides.length === 0) return;
+      if (n >= slides.length) { slideIndex = 0; }
+      if (n < 0) { slideIndex = slides.length - 1; }
+      for (let i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+      }
+      for (let i = 0; i < dots.length; i++) {
+        dots[i].className = dots[i].className.replace(" active-dot", "");
+      }
+      slides[slideIndex].style.display = "block";
+      if (dots[slideIndex]) {
+          dots[slideIndex].className += " active-dot";
+      }
+    }
+
+    function plusSlides(n) {
+      slideIndex += n;
+      showSlides(slideIndex);
+      resetTimer();
+    }
+
+    function currentSlide(n) {
+      slideIndex = n;
+      showSlides(slideIndex);
+      resetTimer();
+    }
+
+    function autoSlide() {
+      slideIndex++;
+      showSlides(slideIndex);
+    }
+
+    function resetTimer() {
+      clearInterval(slideTimer);
+      slideTimer = setInterval(autoSlide, 7000);
+    }
+
+    window.addEventListener('load', function() {
+        if (slides.length > 0) {
+            showSlides(slideIndex);
+            resetTimer();
+        }
+    });
+  </script>
+
+{% endblock body %}
+
+{% block scripts %}
+  <script>
+    window.addEventListener('load', function() {
+      const preloader = document.getElementById('preloader-active');
+      if (preloader) {
+         preloader.style.display = 'none';
+      }
+    });
+  </script>
+{% endblock scripts %}

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - Sacred Groves of India Mapping Project{% endblock %}
+
+{% block body %}
+
+<main>
+    <div class="slider-area2">
+        <div class="slider-height2 d-flex align-items-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="hero-cap hero-cap2 pt-20 text-center">
+                            <h2>About Our Project & Team</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="about-low-area section-padding2">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-md-10">
+                    <div class="about-caption mb-50">
+                        <div class="section-tittle mb-35">
+                            <h2>Our Mission: Mapping and Preserving India's Sacred Groves</h2>
+                        </div>
+                        <p>
+                            We are a team of passionate individuals – Saurav, Abhijeet, Arnish, and Aayush – dedicated to documenting the invaluable sacred groves of India.
+                            Guided by our mentor, Aasani sir, our project aims to create a comprehensive digital repository and interactive map of these unique biocultural heritage sites.
+                        </p>
+                        <p>
+                            Sacred groves are vital ecosystems, rich in biodiversity and deeply intertwined with local traditions and beliefs.
+                            Our goal is to raise awareness about their significance, support conservation efforts, and provide a valuable resource for researchers, students, and the general public.
+                            We believe that by mapping these treasures, we can contribute to their long-term protection and celebrate India's rich natural and cultural legacy.
+                        </p>
+                        <a href="{% url 'map' %}" class="btn">Explore the Groves</a>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="about-img ">
+                        <div class="about-font-img d-none d-lg-block">
+                            <img src="{% static 'img/gallery/sacred_grove_example1.jpg' %}" alt="Representative image of a Sacred Grove or Indian nature">
+                        </div>
+                        <div class="about-back-img ">
+                            <img src="{% static 'img/gallery/team_or_project_visual.jpg' %}" alt="Image representing the project's work or team inspiration">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="testimonial-area testimonial-padding" style="background-color: #f9f9f9;"> <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-10 col-lg-10">
+                     <div class="section-tittle text-center mb-60"> <h2>Meet the Team & Our Mentor</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-xl-8 col-lg-8 col-md-10">
+                    <div class="h1-testimonial-active dot-style"> <div class="single-testimonial text-center">
+                            <div class="testimonial-caption ">
+                                <div class="testimonial-founder">
+                                    <div class="founder-img mb-40">
+                                        <img src="{% static 'img/gallery/asani.png' %}" alt="Aasani Sir, Project Mentor" style="width:100px; height:100px; border-radius:50%;"> <span>Aasani Sir</span>
+                                        <p>Project Mentor</p>
+                                    </div>
+                                </div>
+                                <div class="testimonial-top-cap">
+                                    <p>
+                                        "Guiding this dedicated team – Saurav, Abhijeet, Arnish, and Aayush – has been a rewarding experience.
+                                        Their commitment to cataloging India's sacred groves is commendable. This project holds immense potential
+                                        for ecological awareness and cultural preservation."
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="about-low-area section-padding2">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-10 text-center">
+                    <div class="about-caption mb-50">
+                        <div class="section-tittle mb-35">
+                            <h2>Get Involved / Learn More</h2>
+                        </div>
+                        <p>
+                            We are continuously working to expand our database and improve this platform.
+                            Explore our <a href="{% url 'map' %}">interactive map</a> to see the sacred groves we've documented.
+                            If you have information about a sacred grove not yet on our map, or if you'd like to contribute,
+                            please visit our <a href="{% url 'submit_sacred_grove' %}">Submit a Grove</a> page.
+                            {#{% if contact_page_exists %} or <a href="{% url 'contact' %}">contact us</a>.{% endif %}#}
+                            </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    </main>
+
+{% endblock %}

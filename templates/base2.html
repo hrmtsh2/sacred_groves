@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        {% block title %}{% endblock title %}
+    </title>
+    {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    {% block head %}{% endblock head %}
+</head>
+
+<body>
+
+    <header>
+        <div class="icon">
+            <img src="{% static 'image/icon2.webp' %}" alt="Icon" style="height: 50px;">
+        </div>
+
+        <nav>
+            <a href="{% url 'map' %}">View Map</a> 
+            <a href="#about_us">About Us</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+
+    {% block body %}{% endblock body %}
+
+    <script src="{% static 'js/scripts.js' %}"></script>
+
+</body>
+
+</html> 

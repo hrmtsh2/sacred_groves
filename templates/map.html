@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Interactive Map of Sacred Groves{% endblock title %}
+
+{% block head %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+    <style>
+        /* Loader style */
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #28a745; /* Your theme's primary green */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -25px;
+            margin-left: -25px;
+            z-index: 1000;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Map container styles */
+        #map-container {
+            position: relative;
+            width: 100%;
+            height: 500px; /* Adjust as needed, consider 60vh or similar for viewport height */
+        }
+        #map {
+            height: 100%;
+            border-radius: 8px;
+        }
+        #no-results {
+            text-align: center;
+            padding: 20px;
+            display: none;
+            color: #6c757d;
+        }
+        .filter-card {
+            /* Styles for the filter card if needed */
+        }
+
+        /* Custom Button Styles */
+        .filter-buttons-container {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+        }
+
+        .filter-buttons-container .btn {
+            flex-grow: 1;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+            border-radius: 0.25rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .filter-buttons-container .btn i {
+            margin-right: 0.5em;
+        }
+
+        #applyFilterBtn {
+            background-color: #28a745; /* YOUR THEME'S GREEN */
+            color: #ffffff;
+            border-color: #28a745; /* YOUR THEME'S GREEN */
+        }
+
+        #applyFilterBtn:hover {
+            background-color: #218838; /* Darker green */
+            border-color: #1e7e34;
+            color: #ffffff;
+        }
+
+        #clearFilterBtn {
+            background-color: #ffffff;
+            color: #28a745; /* YOUR THEME'S GREEN */
+            border: 1px solid #28a745; /* YOUR THEME'S GREEN */
+        }
+
+        #clearFilterBtn:hover {
+            background-color: #f8f9fa;
+            color: #218838; /* Darker green */
+            border-color: #218838; /* Darker green */
+        }
+
+        /* Filtered count display */
+        #filteredCount {
+            margin-top: 1rem;
+            font-size: 0.9em;
+            color: #495057;
+            text-align: center;
+        }
+
+        /* Responsive stacking for buttons */
+        @media (max-width: 576px) {
+            .filter-buttons-container {
+                flex-direction: column;
+            }
+            .filter-buttons-container .btn {
+                width: 100%;
+            }
+        }
+    </style>
+{% endblock head %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div id="map-container">
+                <div id="loader" class="loader"></div>
+                <div id="map"></div>
+                <div id="no-results" class="alert alert-info mt-3">No sacred groves found matching your criteria.</div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm filter-card">
+                <div class="card-body">
+                    <h5 class="card-title">Filter Locations</h5>
+                    <hr>
+
+                    <div class="mb-3">
+                        <label for="stateFilter" class="form-label">Select State:</label>
+                        <select id="stateFilter" class="form-select">
+                            <option value="">All States</option>
+                            {% for state in states %}
+                                <option value="{{ state }}">{{ state }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="filter-buttons-container">
+                        <button id="applyFilterBtn" class="btn">
+                            <i class="fas fa-filter"></i> Apply Filter
+                        </button>
+                        <button id="clearFilterBtn" class="btn">
+                            <i class="fas fa-times-circle"></i> Clear Filter
+                        </button>
+                    </div>
+
+                    <div id="filteredCount" class="mt-3"></div>
+
+                    <div id="filterError" class="text-danger mt-2" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // DOM Elements
+        const mapElement = document.getElementById('map');
+        const loaderElement = document.getElementById('loader');
+        const noResultsElement = document.getElementById('no-results');
+        const stateFilterElement = document.getElementById('stateFilter');
+        const applyFilterBtn = document.getElementById('applyFilterBtn');
+        const clearFilterBtn = document.getElementById('clearFilterBtn');
+        const filterErrorElement = document.getElementById('filterError');
+        const filteredCountElement = document.getElementById('filteredCount'); // Get the count display element
+
+        // Initialize map centered on India
+        var map = L.map(mapElement).setView([20.5937, 78.9629], 5);
+
+        // --- IMPORTANT NOTE ON MAP TILES AND INDIAN BOUNDARIES ---
+        // The default OpenStreetMap tiles used below are from a global community project.
+        // They may not depict India's international boundaries according to official Indian government policy
+        // (e.g., regarding POK, Aksai Chin).
+        // To display maps compliant with official Indian boundaries, you would typically need to use
+        // a tile provider that specifically offers such maps, for example, MapmyIndia.
+        // This would involve:
+        // 1. Obtaining an API key from the provider (e.g., MapmyIndia).
+        // 2. Replacing the L.tileLayer URL below with the provider's tile URL, including your API key.
+        // Example (conceptual, replace with actual provider URL and key):
+        // L.tileLayer('https://maps.mapmyindia.com/xyz/v1/tiles/{z}/{x}/{y}?access_token=YOUR_API_KEY', {
+        //     attribution: '&copy; MapmyIndia & OpenStreetMap contributors' // Check provider's required attribution
+        // }).addTo(map);
+        // --- END OF IMPORTANT NOTE ---
+
+        // Add OpenStreetMap tile layer (Default)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        let allGrovesData = []; // To store all fetched groves
+        // Initialize MarkerClusterGroup
+        let markersClusterGroup = L.markerClusterGroup(); // This will hold all markers
+        map.addLayer(markersClusterGroup); // Add the cluster group to the map
+
+        // Function to show/hide loader
+        function showLoader(show) {
+            loaderElement.style.display = show ? 'block' : 'none';
+        }
+
+        // Function to show/hide "no results" message and update count
+        function showNoResults(show, count = 0) {
+            noResultsElement.style.display = show ? 'block' : 'none';
+            mapElement.style.display = show ? 'none' : 'block'; // Hide map if no results
+            if (show) {
+                filteredCountElement.textContent = 'No sacred groves found matching your criteria.';
+            } else {
+                filteredCountElement.textContent = `Showing ${count} sacred grove(s).`;
+            }
+        }
+
+        // Function to show filter error
+        function showFilterError(message) {
+            filterErrorElement.textContent = message;
+            filterErrorElement.style.display = message ? 'block' : 'none';
+        }
+
+        // Function to add markers to the map (now to the cluster group)
+        function addMarkersToMap(groves) {
+            markersClusterGroup.clearLayers(); // Clear previous markers from the cluster group
+
+            if (groves.length === 0) {
+                showNoResults(true);
+                return;
+            }
+            showNoResults(false, groves.length); // Pass the count of groves
+
+            const markersToAdd = [];
+            groves.forEach(grove => {
+                const lat = parseFloat(grove.latitude);
+                const lon = parseFloat(grove.longitude);
+
+                if (isNaN(lat) || isNaN(lon)) {
+                    console.warn(`Invalid coordinates for grove: ${grove.name}`, grove);
+                    return;
+                }
+
+                const marker = L.marker([lat, lon])
+                    .bindPopup(`
+                        <b>${grove.name || 'N/A'}</b><br>
+                        <i>State:</i> ${grove.state || 'N/A'}<br>
+                        <i>Area:</i> ${grove.area_coverage || 'N/A'} hectares
+                        ${grove.id ? `<br><a href="/grove-details/${grove.id}/" target="_blank">View Details</a>` : ''}
+                    `);
+                markersToAdd.push(marker);
+            });
+
+            markersClusterGroup.addLayers(markersToAdd); // Add new markers to the cluster group
+
+            if (markersToAdd.length > 0) {
+                if (map.getSize().x > 0 && map.getSize().y > 0) {
+                    map.fitBounds(markersClusterGroup.getBounds().pad(0.1));
+                }
+            } else if (allGrovesData.length > 0 && (map.getSize().x > 0 && map.getSize().y > 0)) {
+                map.setView([20.5937, 78.9629], 5);
+            }
+        }
+
+        // Function to fetch grove data from the server
+        async function fetchGroveData() {
+            showLoader(true);
+            showFilterError('');
+            filteredCountElement.textContent = 'Loading data...'; // Initial loading message
+            try {
+                const response = await fetch("{% url 'groves_list_api' %}");
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                allGrovesData = data.groves || [];
+                applyFilters();
+            } catch (error) {
+                console.error("Error loading grove data:", error);
+                showFilterError(`Failed to load grove data: ${error.message}. Please try again later.`);
+                showNoResults(true); // Show no results message as data couldn't be loaded
+            } finally {
+                showLoader(false);
+            }
+        }
+
+        // Function to apply current filter settings
+        function applyFilters() {
+            showLoader(true);
+            filteredCountElement.textContent = 'Filtering...'; // Filtering message
+
+            const selectedState = stateFilterElement.value;
+
+            setTimeout(() => { // Simulate a short delay for filtering, as it's client-side
+                const filteredGroves = allGrovesData.filter(grove => {
+                    const stateMatch = selectedState ? grove.state === selectedState : true;
+                    return stateMatch;
+                });
+
+                addMarkersToMap(filteredGroves);
+                showLoader(false);
+            }, 100);
+        }
+
+        // Event listener for "Apply Filter" button
+        applyFilterBtn.addEventListener('click', applyFilters);
+
+        // Event listener for "Clear Filter" button
+        clearFilterBtn.addEventListener('click', function() {
+            stateFilterElement.value = "";
+            showFilterError('');
+            applyFilters();
+        });
+
+        // Initial data fetch when the page loads
+        fetchGroveData();
+
+        window.addEventListener('resize', function() {
+            if (map) {
+                map.invalidateSize();
+            }
+        });
+    });
+</script>
+{% endblock body %}
