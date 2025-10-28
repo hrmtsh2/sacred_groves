@@ -1,0 +1,178 @@
+
+/* home page*/
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #4CAF50;
+    padding: 15px;
+    color: white;
+}
+
+.icon img {
+    height: 50px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 1rem;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+.info-section {
+    display: flex;
+    padding: 20px;
+}
+
+.about-us, .map-details {
+    flex: 1;
+    padding: 20px;
+    background-color: white;
+    margin: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+
+
+* {box-sizing:border-box}
+
+/* Make the slideshow container full width */
+.slideshow-container {
+  position: relative;
+  max-width: 100%;
+  height: 80vh; /* Adjust height as needed */
+  overflow: hidden;
+}
+
+/* Ensure images cover full width while maintaining aspect ratio */
+.mySlides img {
+  width: 100%;
+  height: 80vh; /* Adjust this to reduce height */
+  object-fit: cover; /* Ensures image fills the container without distortion */
+}
+
+
+/* Style the navigation buttons */
+.prev, .next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.prev { left: 10px; }
+.next { right: 10px; }
+
+
+.active, .dot:hover {
+  background-color: #717171;
+}
+
+
+/* Fading animation */
+.fade {
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@keyframes fade {
+  from {opacity: .4}
+  to {opacity: 1}
+}
+
+
+.bottom-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* Space between the two sections */
+  padding: 20px;
+}
+
+.about-us, .map-details {
+  flex: 1;
+  padding: 20px;
+  border: 1px solid black;
+  border-radius: 10px;
+  background-color: pink;
+}
+
+.map-button {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.map-button:hover {
+  background-color: #0056b3;
+}
+
+
+.map-container {
+  display: flex;
+  height: 100vh;
+}
+
+.map-view {
+  flex: 3;
+  height: 100%;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+.filter-sidebar {
+  flex: 1;
+  padding: 20px;
+  background: #f8f9fa;
+  border-left: 2px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.filter-sidebar h3 {
+  margin-bottom: 10px;
+}
+
+.filter-sidebar select, .filter-sidebar button {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.filter-sidebar button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.filter-sidebar button:hover {
+  background-color: #0056b3;
+}
